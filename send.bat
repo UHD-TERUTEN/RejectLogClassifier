@@ -1,16 +1,15 @@
 @echo off
-for /F "tokens=* USEBACKQ" %%F in (account.txt) do (
+set root=%HOMEDRIVE%%HOMEPATH%
+for /F "tokens=* USEBACKQ" %%F in (%root%\account.txt) do (
 set ssh_account=%%F
 )
-set id_rsa_location=%HOMEDRIVE%%HOMEPATH%\.ssh\id_rsa
-echo start update
-echo uploading whitelist DB file
-echo.
+set id_rsa_location=%root%\.ssh\id_rsa
+echo start uploading
+echo uploading whitelist
 echo ssh connects to %ssh_account%...
-ssh -i %id_rsa_location% %ssh_account% "mkdir whitelists"
+set insert_query="insert into Whitelist(Version,LastDistributed) values('%DATE%',null);"
+ssh -i %id_rsa_location% %ssh_account% "mkdir Whitelists & sqlite3 %root%\Desktop\UHDControlServer\db.sqlite \"%insert_query%\""
+scp -i %id_rsa_location% "%root%\Whitelists\%DATE%.sqlite" "%ssh_account%:Whitelists"
 echo.
-echo sftp connects to %ssh_account%...
-sftp -b upload.txt -i %id_rsa_location% %ssh_account%
-echo.
-echo uploading whitelist DB file has done!
+echo whitelist have been uploaded!
 echo finish

@@ -1,2 +1,0 @@
-put D:\whitelist*.sqlite whitelists/
-bye
